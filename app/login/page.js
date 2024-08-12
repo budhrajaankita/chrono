@@ -108,7 +108,7 @@ function LoginPage() {
               Login
             </Button>
             <Typography textAlign="center" sx={{ color: '#e0e0e0', fontFamily: "'Philosopher', sans-serif" }}>
-              Don't have an account? <Link href="/signup" sx={{ color: '#d4af37' }}>Sign up</Link>
+              Don&apos;t have an account? <Link href="/signup" sx={{ color: '#d4af37' }}>Sign up</Link>
             </Typography>
           </Box>
         </motion.div>
