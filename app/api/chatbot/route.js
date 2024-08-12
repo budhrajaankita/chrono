@@ -67,7 +67,11 @@ export async function POST(req) {
       },
       body: JSON.stringify({
         "model": "meta-llama/llama-3.1-8b-instruct:free",
-        messages: [{ role: "system", content: system_prompt }, ...data],
+        messages: [
+          { "role": "system", "content": system_prompt },
+          { "role": "user", "content": message },
+        ],
+        // messages: [{ role: "system", content: system_prompt }, ...data],
         stream: true,
       }),
     });
