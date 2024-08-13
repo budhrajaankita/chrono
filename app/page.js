@@ -61,7 +61,7 @@ function LandingPage() {
       }}
     >
       <Container maxWidth="lg">
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mb: 4 }}>
+      {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mb: 4 }}>
       <Link href="/login">
       <Button
                 variant="outlined"
@@ -102,8 +102,7 @@ function LandingPage() {
                 Sign Up
               </Button>
             </Link>
-          {/* <Link href="/signup" sx={{ color: '#d4af37', textDecoration: 'none' }}>Sign Up</Link> */}
-        </Box>
+        </Box> */}
         <Grid container spacing={4} justifyContent="center" alignItems="center" mt={8}>
           <Grid item xs={12}>
             <Typography
