@@ -51,7 +51,7 @@ export default function Quiz() {
     // }, []);
 
     const loadQuestions = async (selectedTopic) => {
-      console.log("here" +selectedTopic);
+      // console.log("here" +selectedTopic);
       setLoading(true);
       const response = await fetch("/api/quiz", {
         method: "POST",

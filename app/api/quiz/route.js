@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
 
 export async function POST(req) {
-  console.log("API");
+  // console.log("API");
   const { userTopic } = await req.json();
-  console.log(userTopic);
+  // console.log(userTopic);
   let topic = "world history";
   if (userTopic != ""){
     topic = userTopic;  
   }
  
-  console.log(topic);
+  // console.log(topic);
 
   const system_prompt = `You are a history quiz generator for ${topic}. Always remember this crucial thing - Do not include any explanation or text (like json: or name of json) other than the JSON itself. ONLY return a JSON array of 15 multiple-choice questions about ${topic}. Each question should have 4 options and one correct answer. Format the response as a JSON array, where each object represents a question with properties: question, options (array), and correctAnswer.`;
   const message = `Generate a JSON ONLY response for a history quiz on ${topic} with 10 questions.`;

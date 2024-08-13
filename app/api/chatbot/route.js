@@ -57,7 +57,10 @@ User:Adventure
 Chronos: Excellent choice! Prepare yourself for an exciting adventure in Ancient Rome. As we step out of our time machine...`;
 
 export async function POST(req) {
-  const { message } = await req.json();
+  const { messages } = await req.json();
+
+  const messageArray = Array.isArray(messages) ? messages : [{ role: "user", content: messages }];
+  console.log(messageArray);
 
   try {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -69,7 +72,7 @@ export async function POST(req) {
       body: JSON.stringify({
         "model": "meta-llama/llama-3.1-8b-instruct:free",
         messages: [
-          { "role": "system", "content": system_prompt }, ...message
+          { "role": "system", "content": system_prompt }, ...messageArray
           // { "role": "user", "content": message },
         ],
         stream: true,

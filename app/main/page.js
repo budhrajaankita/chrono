@@ -112,42 +112,95 @@ function App() {
   ]);
   const [input, setInput] = useState("");
 
+  // const handleSend = async () => {
+  //   if (input.trim()) {
+  //     const userMessage = { role: "user", content: input };
+  //     const updatedMessages = [...messages, userMessage];
+
+  //     setMessages(updatedMessages);
+  //     setInput(""); // Clear the input field
+
+  //     try {
+  //       const response = await fetch("/api/chatbot", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ messages: updatedMessages }),
+  //       });
+
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+
+  //       const reader = response.body.getReader();
+  //       const decoder = new TextDecoder();
+
+  //       // Initialize the assistant message
+  //       let assistantMessage = { role: "assistant", content: "" };
+  //       setMessages((prevMessages) => [...prevMessages, assistantMessage]);
+
+  //       // Process the streaming response
+  //       while (true) {
+  //         const { done, value } = await reader.read();
+  //         if (done) break;
+
+  //         const text = decoder.decode(value, { stream: true });
+  //         const lines = text.split('\n');
+
+  //         lines.forEach((line) => {
+  //           if (line.startsWith('data: ')) {
+  //             const jsonData = JSON.parse(line.substring(6).trim());
+  //             if (jsonData.response) {
+  //               assistantMessage.content += jsonData.response;
+  //               setMessages((prevMessages) => {
+  //                 const otherMessages = prevMessages.slice(0, prevMessages.length - 1);
+  //                 return [...otherMessages, assistantMessage];
+  //               });
+  //             }
+  //           }
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching response:", error);
+  //     }
+  //   }
+  // };
+
   const handleSend = async () => {
     if (input.trim()) {
       const userMessage = { role: "user", content: input };
       const updatedMessages = [...messages, userMessage];
-
+  
       setMessages(updatedMessages);
       setInput(""); // Clear the input field
-
+  
       try {
         const response = await fetch("/api/chatbot", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ messages: updatedMessages }),
+          body: JSON.stringify({ messages: updatedMessages }), // Send full message history
         });
-
+  
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
+  
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
-
-        // Initialize the assistant message
+  
         let assistantMessage = { role: "assistant", content: "" };
         setMessages((prevMessages) => [...prevMessages, assistantMessage]);
-
-        // Process the streaming response
+  
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-
+  
           const text = decoder.decode(value, { stream: true });
           const lines = text.split('\n');
-
+  
           lines.forEach((line) => {
             if (line.startsWith('data: ')) {
               const jsonData = JSON.parse(line.substring(6).trim());
@@ -166,6 +219,7 @@ function App() {
       }
     }
   };
+  
 
   const handleClearChat = () => {
     setMessages([
