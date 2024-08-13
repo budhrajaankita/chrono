@@ -1,6 +1,7 @@
 // app/main/ChatArea.js
 "use client";
 import React, { useState } from "react";
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Button,
@@ -20,61 +21,141 @@ import Quiz from "../quiz/page";
 // import { ThemeProvider } from '@mui/material/styles';
 
 
-function App() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+// function App() {
+//   const [messages, setMessages] = useState([
+//     {
+//       role: "assistant",
+//       content:
+//         "Hi there! I'm your Time Travel Companion. ",
+//     },
+//   ]);
+//   const [message, setMessage] = useState([]);
+//   const [input, setInput] = useState("");
 
-  const handleClearChat = () => {
-    setMessages([]);
-  };
+ 
+
+//   const handleSend = async () => {
+//     if (input.trim()) {
+//       setMessage("");
+//     setMessages((messages) => [
+//       ...messages,
+//       { role: "user", content: message },
+//       { role: "assistant", content: "" },
+//     ]);
+//       const newMessages = [...messages, { role: "user", content: input }];
+//       setMessages(newMessages);
+//       setInput(""); // Clear the input field
+  
+//       try {
+//         const response = await fetch("/api/chatbot", {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({ messages: newMessages }),
+//         });
+  
+//         if (!response.ok) {
+//           throw new Error(`HTTP error! status: ${response.status}`);
+//         }
+  
+//         const reader = response.body.getReader();
+//         const decoder = new TextDecoder();
+  
+//         // Initialize the assistant message
+//         setMessages((prevMessages) => [
+//           ...prevMessages,
+//           { role: "assistant", content: "" },
+//         ]);
+  
+//         // Process the streaming response
+//         while (true) {
+//           const { done, value } = await reader.read();
+//           if (done) break;
+  
+//           const text = decoder.decode(value, { stream: true });
+//           const lines = text.split('\n');
+          
+//           lines.forEach((line) => {
+//             if (line.startsWith('data: ')) {
+//               const jsonData = JSON.parse(line.substring(6).trim());
+//               if (jsonData.response) {
+//                 setMessages((prevMessages) => {
+//                   const lastMessage = prevMessages[prevMessages.length - 1];
+//                   const otherMessages = prevMessages.slice(0, prevMessages.length - 1);
+//                   return [
+//                     ...otherMessages,
+//                     { ...lastMessage, content: lastMessage.content + jsonData.response },
+//                   ];
+//                 });
+//               }
+//             }
+//           });
+//         }
+//       } catch (error) {
+//         console.error("Error fetching response:", error);
+//       }
+//     }
+//   };
+
+//   const handleClearChat = () => {
+//     setMessages([]);
+//   };
+
+function App() {
+  const router = useRouter()
+  const [messages, setMessages] = useState([
+    {
+      role: "assistant",
+      content: "Hi there! I'm your Time Travel Companion.",
+    },
+  ]);
+  const [input, setInput] = useState("");
 
   const handleSend = async () => {
     if (input.trim()) {
-      const newMessages = [...messages, { role: "user", content: input }];
-      setMessages(newMessages);
+      const userMessage = { role: "user", content: input };
+      const updatedMessages = [...messages, userMessage];
+
+      setMessages(updatedMessages);
       setInput(""); // Clear the input field
-  
+
       try {
         const response = await fetch("/api/chatbot", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ messages: newMessages }),
+          body: JSON.stringify({ messages: updatedMessages }),
         });
-  
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-  
+
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
-  
+
         // Initialize the assistant message
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { role: "assistant", content: "" },
-        ]);
-  
+        let assistantMessage = { role: "assistant", content: "" };
+        setMessages((prevMessages) => [...prevMessages, assistantMessage]);
+
         // Process the streaming response
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-  
+
           const text = decoder.decode(value, { stream: true });
           const lines = text.split('\n');
-          
+
           lines.forEach((line) => {
             if (line.startsWith('data: ')) {
               const jsonData = JSON.parse(line.substring(6).trim());
               if (jsonData.response) {
+                assistantMessage.content += jsonData.response;
                 setMessages((prevMessages) => {
-                  const lastMessage = prevMessages[prevMessages.length - 1];
                   const otherMessages = prevMessages.slice(0, prevMessages.length - 1);
-                  return [
-                    ...otherMessages,
-                    { ...lastMessage, content: lastMessage.content + jsonData.response },
-                  ];
+                  return [...otherMessages, assistantMessage];
                 });
               }
             }
@@ -86,6 +167,14 @@ function App() {
     }
   };
 
+  const handleClearChat = () => {
+    setMessages([
+      {
+        role: "assistant",
+        content: "Hi there! I'm your Time Travel Companion.",
+      },
+    ]);
+  }
   return (
     // <Box
     //   sx={{
@@ -223,7 +312,7 @@ function App() {
 
         <Box sx={{ mt: 4, display: "flex", justifyContent: "center", gap: 2 }}>
           {[
-            { icon: <QuizIcon/>, label: "Quiz Me" },
+            { icon: <QuizIcon/>, label: "Quiz Me", path:"/quiz" },
             // { icon: <AccessTime />, label: "Time Travel" },
             // { icon: <Public />, label: "Mythical Realms" },
             // { icon: <AutoStories />, label: "Living Legends" }
@@ -234,6 +323,7 @@ function App() {
               whileTap={{ scale: 0.9 }}
             >
               <IconButton
+               onClick={() => router.push(item.path)}
                 sx={{
                   color: "#ffd700",
                   backgroundColor: "rgba(255, 255, 255, 0.05)",

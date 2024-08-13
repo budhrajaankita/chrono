@@ -78,6 +78,10 @@ function SignupPage() {
                   '&.Mui-focused fieldset': { borderColor: '#d4af37' },
                 },
                 '& .MuiInputBase-input': { color: '#e0e0e0' },
+                '& .MuiInputLabel-root': { color:'#3e2723',
+                '&.Mui-focused': { color:'#3e2723' },
+                },
+
               }}
             />
             <TextField

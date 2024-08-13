@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Container, Typography, Card, CardContent, Button, Box, CircularProgress } from '@mui/material';
+import { Container, Typography, Card, CardContent, Button, Box, CircularProgress, TextField } from '@mui/material';
 import Link from "next/link";
 import '../globals.css'; // Import global styles
 
@@ -12,41 +12,77 @@ export default function Quiz() {
     const [score, setScore] = useState(0);
     const [showScore, setShowScore] = useState(false);
     const [loading, setLoading] = useState(true);
-  
-    useEffect(() => {
-      async function loadQuestions() {
-        const response = await fetch("/api/quiz", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
+    const [topic, setTopic] = useState('');
+    const [isTopicSelected, setIsTopicSelected] = useState(false);
+    
+    // useEffect(() => {
+    //   async function loadQuestions() {
+    //     const response = await fetch("/api/quiz", {
+    //         method: "POST",
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //         },
+    //       });
 
-          console.log(response)
+    //       console.log(response)
   
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
+    //       if (!response.ok) {
+    //         throw new Error(`HTTP error! status: ${response.status}`);
+    //       }
   
-        const fetchedQuestions = await response.json();
+    //     const fetchedQuestions = await response.json();
 
-        if (fetchedQuestions) {
-          setQuestions(fetchedQuestions);
-        } else {
-          // Fallback to default questions if fetching fails
-          setQuestions([
-            {
-              question: "Which ancient civilization built the pyramids of Giza?",
-              options: ["Mayans", "Egyptians", "Greeks", "Romans"],
-              correctAnswer: "Egyptians"
-            },
-            // ... add more default questions here
-          ]);
-        }
-        setLoading(false);
+    //     if (fetchedQuestions) {
+    //       setQuestions(fetchedQuestions);
+    //     } else {
+    //       // Fallback to default questions if fetching fails
+    //       setQuestions([
+    //         {
+    //           question: "Which ancient civilization built the pyramids of Giza?",
+    //           options: ["Mayans", "Egyptians", "Greeks", "Romans"],
+    //           correctAnswer: "Egyptians"
+    //         },
+    //         // ... add more default questions here
+    //       ]);
+    //     }
+    //     setLoading(false);
+    //   }
+    //   loadQuestions();
+    // }, []);
+
+    const loadQuestions = async (selectedTopic) => {
+      console.log("here" +selectedTopic);
+      setLoading(true);
+      const response = await fetch("/api/quiz", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userTopic: selectedTopic}),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      loadQuestions();
-    }, []);
+  
+      const fetchedQuestions = await response.json();
+  
+      if (fetchedQuestions) {
+        setQuestions(fetchedQuestions);
+      } else {
+        // Fallback to default questions if fetching fails
+        setQuestions([
+          {
+            question: "Which ancient civilization built the pyramids of Giza?",
+            options: ["Mayans", "Egyptians", "Greeks", "Romans"],
+            correctAnswer: "Egyptians"
+          },
+          // ... add more default questions here
+        ]);
+      }
+      setLoading(false);
+    };
+  
   
     const handleAnswerClick = (selectedAnswer) => {
       if (selectedAnswer === questions[currentQuestion].correctAnswer) {
@@ -60,26 +96,70 @@ export default function Quiz() {
         setShowScore(true);
       }
     };
+
+    const handleStartQuiz = () => {
+      setIsTopicSelected(true);
+      console.log(topic);
+      loadQuestions(topic);
+    };
+
+    if (!isTopicSelected) {
+      return (
+        <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <Card sx={{
+            borderRadius: '20px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 0 20px rgba(255, 215, 0, 0.3)',
+            p: 4,
+            textAlign: 'center',
+          }}>
+            <Typography variant="h5" color="#ffd700" fontFamily="'Cinzel', serif" gutterBottom>
+              Choose Your Topic
+            </Typography>
+            <TextField
+              label="Your Preferred Topic"
+              variant="outlined"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: '#d4af37' },
+                  '&:hover fieldset': { borderColor: '#d4af37' },
+                  '&.Mui-focused fieldset': { borderColor: '#d4af37' },
+                },
+                '& .MuiInputLabel-root': { color:'#3e2723',
+                '&.Mui-focused': { color:'#3e2723' },
+                },
+                
+
+                '& .MuiInputBase-input': { color: '#e0e0e0' },
+               mt: 2, mb: 2 }}
+            />
+            <Button
+              variant="contained"
+              onClick={handleStartQuiz}
+              sx={{
+                mt: 2,
+                backgroundColor: '#ffd700',
+                color: '#000',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                  borderColor: '#ffd700',
+                },
+              }}
+            >
+              Start Quiz
+            </Button>
+          </Card>
+        </Container>
+      );
+    }
   
     if (loading) {
       return (
-    //     <Box
-    //   sx={{
-    //     minHeight: "100vh",
-    //     display: "flex",
-    //     flexDirection: "column",
-    //     justifyContent: "center",
-    //     background: "linear-gradient(17deg, #3e2723 0%, #394e38 50%, #3e2723 100%)",
-
-    //     // background: "linear-gradient(135deg, #103b33 0%, #485563 50%, #5b4863 100%)",
-    //     // background: "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)",29323c 2c3e50
-    //     backgroundAttachment: "fixed",
-    //     backgroundSize: "cover",
-    //     // py: { xs: 4, md: 8 },
-    //   }}
-    // >
-    // <ThemeProvider theme={theme}>
-
     <Box>
         <Container sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         

@@ -133,7 +133,7 @@ function LandingPage() {
                 fontFamily: "'Philosopher', sans-serif",
               }}
             >
-              Transcend the boundaries of time and myth with our celestial odyssey machine.
+              Your Journey Through Time Begins Here
             </Typography>
           </Grid>
           <Grid item xs={12} textAlign="center">
