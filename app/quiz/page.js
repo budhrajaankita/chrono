@@ -14,41 +14,8 @@ export default function Quiz() {
     const [loading, setLoading] = useState(true);
     const [topic, setTopic] = useState('');
     const [isTopicSelected, setIsTopicSelected] = useState(false);
+    const [feedback, setFeedback] = useState(null);
     
-    // useEffect(() => {
-    //   async function loadQuestions() {
-    //     const response = await fetch("/api/quiz", {
-    //         method: "POST",
-    //         headers: {
-    //           "Content-Type": "application/json",
-    //         },
-    //       });
-
-    //       console.log(response)
-  
-    //       if (!response.ok) {
-    //         throw new Error(`HTTP error! status: ${response.status}`);
-    //       }
-  
-    //     const fetchedQuestions = await response.json();
-
-    //     if (fetchedQuestions) {
-    //       setQuestions(fetchedQuestions);
-    //     } else {
-    //       // Fallback to default questions if fetching fails
-    //       setQuestions([
-    //         {
-    //           question: "Which ancient civilization built the pyramids of Giza?",
-    //           options: ["Mayans", "Egyptians", "Greeks", "Romans"],
-    //           correctAnswer: "Egyptians"
-    //         },
-    //         // ... add more default questions here
-    //       ]);
-    //     }
-    //     setLoading(false);
-    //   }
-    //   loadQuestions();
-    // }, []);
 
     const loadQuestions = async (selectedTopic) => {
       // console.log("here" +selectedTopic);
@@ -77,7 +44,7 @@ export default function Quiz() {
             options: ["Mayans", "Egyptians", "Greeks", "Romans"],
             correctAnswer: "Egyptians"
           },
-          // ... add more default questions here
+          // ... add more default questions?
         ]);
       }
       setLoading(false);
@@ -87,13 +54,22 @@ export default function Quiz() {
     const handleAnswerClick = (selectedAnswer) => {
       if (selectedAnswer === questions[currentQuestion].correctAnswer) {
         setScore(score + 1);
+        setFeedback("correct");
+      } else {
+        setFeedback("incorrect");
       }
   
       const nextQuestion = currentQuestion + 1;
       if (nextQuestion < questions.length) {
-        setCurrentQuestion(nextQuestion);
+        setTimeout(() => {
+          setCurrentQuestion(nextQuestion);
+          setFeedback(null);
+        }, 5000); 
       } else {
-        setShowScore(true);
+        setTimeout(() => {
+          setShowScore(true);
+          setFeedback(null);
+        }, 5000);
       }
     };
 
@@ -133,8 +109,12 @@ export default function Quiz() {
                 '& .MuiInputLabel-root': { color:'#3e2723',
                 '&.Mui-focused': { color:'#3e2723' },
                 },
-                
-
+                '& .input:-internal-autofill-selected fieldset': {
+                backgroundColor: "#3e2723"},
+                '& input:-webkit-autofill': {
+      WebkitBoxShadow: '0 0 0 100px #415240 inset', // Set the background color for autofill
+      WebkitTextFillColor: '#e0e0e0', // Set the text color for autofill
+    },
                 '& .MuiInputBase-input': { color: '#e0e0e0' },
                mt: 2, mb: 2 }}
             />
@@ -268,11 +248,17 @@ export default function Quiz() {
                         variant="outlined"
                         onClick={() => handleAnswerClick(option)}
                         fullWidth
+                        disabled={feedback !== null}
                         sx={{
                           mt: 2,
                           color: '#ffd700',
                           borderColor: '#ffd700',
                           borderRadius: "20px",
+                          backgroundColor: feedback && option === questions[currentQuestion].correctAnswer
+          ? 'rgba(0, 255, 0, 0.1)' // Green background for correct answer
+          : feedback && feedback === "incorrect"
+          ? 'rgba(255, 0, 0, 0.1)' // Red background for incorrect answer
+          : 'transparent',
                           '&:hover': {
           backgroundColor: 'rgba(255, 215, 0, 0.1)', // Background color on hover
           borderColor: '#ffd700', // Border color on hover

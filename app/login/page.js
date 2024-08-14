@@ -95,6 +95,10 @@ function LoginPage() {
                 '& .MuiInputLabel-root': { color:'#3e2723',
                 '&.Mui-focused': { color:'#3e2723' },
                 },
+                '& input:-webkit-autofill': {
+                  WebkitBoxShadow: '0 0 0 100px #415240 inset', // Set the background color for autofill
+                  WebkitTextFillColor: '#e0e0e0', // Set the text color for autofill
+                },
 
               }}
             />
