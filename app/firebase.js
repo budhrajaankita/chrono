@@ -5,9 +5,7 @@ import { getStorage } from 'firebase/storage';
 import { getAuth } from "firebase/auth";
 
 require('dotenv').config();
-
-
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -22,8 +20,16 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
-const analytics = getAnalytics(app);
 const storage = getStorage(app);
+
+if (typeof window !== 'undefined') {
+  isSupported().then((supported) => {
+    if (supported) {
+      getAnalytics(app);
+    }
+  });
+}
+
 export const auth = getAuth(app);
 
 
