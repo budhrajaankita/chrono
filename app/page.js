@@ -137,7 +137,7 @@ function LandingPage() {
             </Typography>
           </Grid>
           <Grid item xs={12} textAlign="center">
-            <Link href="/main">
+            <Link href="/login">
               <Button
                 component={motion.button}
                 whileHover={{ scale: 1.05, boxShadow: "0 0 15px rgba(255, 215, 0, 0.7)" }}

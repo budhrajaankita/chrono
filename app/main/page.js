@@ -2,6 +2,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from 'next/navigation';
+import HomeIcon from '@mui/icons-material/Home';
 import {
   Box,
   Button,
@@ -112,60 +113,6 @@ function App() {
   ]);
   const [input, setInput] = useState("");
 
-  // const handleSend = async () => {
-  //   if (input.trim()) {
-  //     const userMessage = { role: "user", content: input };
-  //     const updatedMessages = [...messages, userMessage];
-
-  //     setMessages(updatedMessages);
-  //     setInput(""); // Clear the input field
-
-  //     try {
-  //       const response = await fetch("/api/chatbot", {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify({ messages: updatedMessages }),
-  //       });
-
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! status: ${response.status}`);
-  //       }
-
-  //       const reader = response.body.getReader();
-  //       const decoder = new TextDecoder();
-
-  //       // Initialize the assistant message
-  //       let assistantMessage = { role: "assistant", content: "" };
-  //       setMessages((prevMessages) => [...prevMessages, assistantMessage]);
-
-  //       // Process the streaming response
-  //       while (true) {
-  //         const { done, value } = await reader.read();
-  //         if (done) break;
-
-  //         const text = decoder.decode(value, { stream: true });
-  //         const lines = text.split('\n');
-
-  //         lines.forEach((line) => {
-  //           if (line.startsWith('data: ')) {
-  //             const jsonData = JSON.parse(line.substring(6).trim());
-  //             if (jsonData.response) {
-  //               assistantMessage.content += jsonData.response;
-  //               setMessages((prevMessages) => {
-  //                 const otherMessages = prevMessages.slice(0, prevMessages.length - 1);
-  //                 return [...otherMessages, assistantMessage];
-  //               });
-  //             }
-  //           }
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching response:", error);
-  //     }
-  //   }
-  // };
 
   const handleSend = async () => {
     if (input.trim()) {
@@ -225,22 +172,11 @@ function App() {
     setMessages([
       {
         role: "assistant",
-        content: "Hi there! I'm your Time Travel Companion.",
+        content: "Hi there! I'm Chronos, your Time Travel Companion.",
       },
     ]);
   }
   return (
-    // <Box
-    //   sx={{
-    //     minHeight: "100vh",
-    //     display: "flex",
-    //     flexDirection: "column",
-    //     background: "linear-gradient(135deg, #103b33 0%, #485563 50%, #5b4863 100%)",
-    //     backgroundAttachment: "fixed",
-    //     backgroundSize: "cover",
-    //     py: 4,
-    //   }}
-    // >
 
     <Box
     sx={{
@@ -365,6 +301,36 @@ function App() {
         </Paper>
 
         <Box sx={{ mt: 4, display: "flex", justifyContent: "center", gap: 2 }}>
+        <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <IconButton
+              onClick={() => router.push('/')} // Navigate to the home page
+              sx={{
+                color: "#ffd700",
+                backgroundColor: "rgba(255, 255, 255, 0.05)",
+                backdropFilter: "blur(5px)",
+                border: "1px solid rgba(255, 255, 255, 0.1)",
+                borderRadius: "15px",
+                p: 2,
+                flexDirection: "column",
+              }}
+            >
+              <HomeIcon />
+              <Typography
+                variant="caption"
+                sx={{
+                  mt: 1,
+                  color: "#e0e0e0",
+                  fontFamily: "'Philosopher', sans-serif",
+                }}
+              >
+                Home
+              </Typography>
+            </IconButton>
+          </motion.div>
+          
           {[
             { icon: <QuizIcon/>, label: "Quiz Me", path:"/quiz" },
             // { icon: <AccessTime />, label: "Time Travel" },

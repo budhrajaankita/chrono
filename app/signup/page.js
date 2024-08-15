@@ -1,33 +1,59 @@
 'use client';
 import React, { useState } from 'react';
-import { Box, Container, Typography, TextField, Button, Link } from '@mui/material';
+import { auth } from '../firebase';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useRouter } from 'next/navigation';
+import { Box, Container, Typography, TextField, Button, Link, Alert } from '@mui/material';
 import { motion } from 'framer-motion';
 
 function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   const handleSubmit = (e) => {
+    console.log("sign up begins..")
     e.preventDefault();
-    // Handle signup logic here
-    // You'll likely want to add validation (e.g., password match)
-    console.log('Signup submitted', { email, password });
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      console.log("error");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    setError('');
+
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        console.log('User signed up:', userCredential.user);
+        router.push('/main');
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
   };
 
   return (
     <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        background: "linear-gradient(135deg, #103b33 0%, #485563 50%, #5b4863 100%)",
-        backgroundAttachment: "fixed",
-        backgroundSize: "cover",
-        py: { xs: 4, md: 8 },
-      }}
-    >
+    sx={{
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      background: "linear-gradient(17deg, #3e2723 0%, #394e38 50%, #3e2723 100%)",
+      backgroundAttachment: "fixed",
+      backgroundSize: "cover",
+      py: { xs: 4, md: 8 },
+    }}
+  >
+    
       <Container maxWidth="sm">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -62,6 +88,7 @@ function SignupPage() {
               border: '1px solid rgba(255, 255, 255, 0.1)',
             }}
           >
+            {error && <Alert severity="error">{error}</Alert>}
             <TextField
               label="Email"
               type="email"
@@ -69,7 +96,7 @@ function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              InputLabelProps={{ style: { color: '#d4af37' } }}
+              InputLabelProps={{ style: { color: '#3e2723' } }}
               sx={{
                 borderRadius: "15px",
                 '& .MuiOutlinedInput-root': {
@@ -95,7 +122,7 @@ function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              InputLabelProps={{ style: { color: '#d4af37' } }}
+              InputLabelProps={{ style: { color: '#3e2723' } }}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': { borderColor: '#d4af37' },
@@ -112,7 +139,7 @@ function SignupPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              InputLabelProps={{ style: { color: '#d4af37' } }}
+              InputLabelProps={{ style: { color: '#3e2723' } }}
               sx={{
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': { borderColor: '#d4af37' },
@@ -146,105 +173,3 @@ function SignupPage() {
 }
 
 export default SignupPage;
-
-// 'use client'
-// // app/signup/page.js
-// import { useState } from 'react';
-// import { Box, TextField, Button, Typography, Container } from '@mui/material';
-// import Link from 'next/link';
-// import { styled } from '@mui/system';
-
-// // Create styled components using your global CSS variables
-// const StyledContainer = styled(Container)`
-//   background: var(--primary-bg);
-//   min-height: 100vh;
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: center;
-// `;
-
-// const StyledTypography = styled(Typography)`
-//   color: var(--primary-color);
-//   font-family: 'Cinzel', serif;
-// `;
-
-// const StyledTextField = styled(TextField)`
-//   & .MuiOutlinedInput-root {
-//     & fieldset {
-//       border-color: var(--primary-color);
-//     }
-//     &:hover fieldset {
-//       border-color: var(--primary-color);
-//     }
-//     &.Mui-focused fieldset {
-//       border-color: var(--primary-color);
-//     }
-//   }
-//   & .MuiInputLabel-root {
-//     color: var(--primary-color);
-//   }
-//   & .MuiInputBase-input {
-//     color: var(--secondary-color);
-//   }
-// `;
-
-// const StyledButton = styled(Button)`
-//   background-color: var(--primary-color);
-//   color: #000;
-//   &:hover {
-//     background-color: #c5a028;
-//   }
-// `;
-
-// export default function SignupPage() {
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-
-//   const handleSignup = () => {
-//     console.log('Signing up with', email, password);
-//   };
-
-//   return (
-//     <StyledContainer maxWidth="xs">
-//       <StyledTypography variant="h4" textAlign="center" gutterBottom>
-//         Sign Up
-//       </StyledTypography>
-//       <Box component="form" sx={{ mt: 1 }}>
-//         <StyledTextField
-//           margin="normal"
-//           required
-//           fullWidth
-//           label="Email Address"
-//           autoComplete="email"
-//           autoFocus
-//           value={email}
-//           onChange={(e) => setEmail(e.target.value)}
-//         />
-//         <StyledTextField
-//           margin="normal"
-//           required
-//           fullWidth
-//           label="Password"
-//           type="password"
-//           autoComplete="new-password"
-//           value={password}
-//           onChange={(e) => setPassword(e.target.value)}
-//         />
-//         <StyledButton
-//           type="button"
-//           fullWidth
-//           variant="contained"
-//           sx={{ mt: 3, mb: 2 }}
-//           onClick={handleSignup}
-//         >
-//           Sign Up
-//         </StyledButton>
-//         <Link href="/login" passHref>
-//           <Button fullWidth variant="text" sx={{ color: 'var(--primary-color)' }}>
-//             Already have an account? Log In
-//           </Button>
-//         </Link>
-//       </Box>
-//     </StyledContainer>
-//   );
-// }
